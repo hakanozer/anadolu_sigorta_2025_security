@@ -34,10 +34,14 @@ public class LoginController {
             model.addAttribute("errors", bindingResult.getFieldErrors());
             return "login";
         }
+        model.addAttribute("data", data);model.addAttribute("data", data);
         Customer customer = customerService.login(customerLoginDto);
-        System.out.println("loginStatus: " + customer);
-        model.addAttribute("data", data);
-        return "login";
+        if (customer == null) {
+            return "login";
+        }else {
+            return "redirect:/dashboard";
+        }
+
     }
 
 }
