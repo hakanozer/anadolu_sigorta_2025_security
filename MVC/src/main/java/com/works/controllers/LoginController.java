@@ -34,10 +34,9 @@ public class LoginController {
             model.addAttribute("errors", bindingResult.getFieldErrors());
             return "login";
         }
-        Customer customer = customerService.login(customerLoginDto);
-        if (customer != null) {
-
-        }
+        //Customer customer = customerService.login(customerLoginDto);
+        boolean loginStatus = customerService.loginDB(customerLoginDto);
+        System.out.println("loginStatus: " + loginStatus);
         model.addAttribute("data", data);
         return "login";
     }
