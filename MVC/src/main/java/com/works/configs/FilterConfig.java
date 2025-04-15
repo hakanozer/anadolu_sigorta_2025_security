@@ -14,11 +14,31 @@ public class FilterConfig implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
-        String data = req.getParameter("data");
-        if (data != null && data.contains("script")) {
+
+        String uri = req.getRequestURI();
+        String[] freeUrls = {"/", "/about", "/contact"};
+        boolean loginStatus = true;
+        for (String freeUrl : freeUrls) {
+            if (uri.equals(freeUrl)) {
+                loginStatus = false;
+                break;
+            }
+        }
+
+        if (loginStatus) {
+            // login gerekli
+            Object loginObj = req.getSession().getAttribute("customer");
+            if (loginObj != null) {
+                filterChain.doFilter(req, res);
+            }else {
+                res.sendRedirect("/");
+            }
         }else {
+            // login gerekli değil
             filterChain.doFilter(req, res);
         }
+
+
     }
 
 }

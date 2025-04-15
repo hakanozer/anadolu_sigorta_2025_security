@@ -3,6 +3,7 @@ package com.works.services;
 import com.works.entities.Customer;
 import com.works.entities.dto.CustomerLoginDto;
 import com.works.repositories.CustomerRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final DBService dbService;
     private final TinkEncDec tinkEncDec;
+    private final HttpServletRequest request;
 
     public Customer login(CustomerLoginDto customerLoginDto) {
         Optional<Customer> optionalCustomer = customerRepository.findByEmailEqualsIgnoreCase(customerLoginDto.getEmail());
@@ -25,6 +27,8 @@ public class CustomerService {
             Customer customer = optionalCustomer.get();
             String plainPassword = tinkEncDec.decrypt(customer.getPassword());
             if (customerLoginDto.getPassword().equals(plainPassword)) {
+                customer.setPassword(null);
+                request.getSession().setAttribute("customer", customer);
                 return customer;
             }
         }
