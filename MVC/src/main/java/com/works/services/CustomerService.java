@@ -17,12 +17,16 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final DBService dbService;
+    private final TinkEncDec tinkEncDec;
 
     public Customer login(CustomerLoginDto customerLoginDto) {
-        Optional<Customer> optionalCustomer = customerRepository.findByEmailEqualsIgnoreCaseAndPasswordEquals(customerLoginDto.getEmail(), customerLoginDto.getPassword());
+        Optional<Customer> optionalCustomer = customerRepository.findByEmailEqualsIgnoreCase(customerLoginDto.getEmail());
         if (optionalCustomer.isPresent()) {
             Customer customer = optionalCustomer.get();
-            return customer;
+            String plainPassword = tinkEncDec.decrypt(customer.getPassword());
+            if (customerLoginDto.getPassword().equals(plainPassword)) {
+                return customer;
+            }
         }
         return null;
     }
